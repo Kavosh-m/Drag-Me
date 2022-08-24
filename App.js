@@ -1,85 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   PanResponder,
   Animated,
-  Linking,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import {EmptyPlaceholder, TouchableIcon} from './src/components';
+
+import brands from './src/assets/fakeData.json';
 
 const App = () => {
-  const [data, setData] = useState([
-    {
-      id: '1',
-      title: 'twitter',
-      website: 'https://www.twitter.com',
-      color: 'deepskyblue',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '2',
-      title: 'facebook',
-      website: 'https://www.facebook.com',
-      color: 'cornflowerblue',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '3',
-      title: 'amazon',
-      website: 'https://www.amazon.com',
-      color: '#fff',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '4',
-      title: 'instagram',
-      website: 'https://www.instagram.com',
-      color: 'deeppink',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '5',
-      title: 'google',
-      website: 'https://www.google.com',
-      color: '#DB4437',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '6',
-      title: 'windows',
-      website: 'https://www.microsoft.com',
-      color: 'cyan',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '7',
-      title: 'android',
-      website: 'https://developer.android.com',
-      color: 'green',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '8',
-      title: 'gitlab',
-      website: 'https://www.gitlab.com',
-      color: 'darkorange',
-      pan: new Animated.ValueXY(),
-    },
-    {
-      id: '9',
-      title: 'youtube',
-      website: 'https://www.youtube.com',
-      color: 'red',
-      pan: new Animated.ValueXY(),
-    },
-  ]);
+  const [data, setData] = useState(() =>
+    brands.map(item => {
+      return {...item, pan: new Animated.ValueXY()};
+    }),
+  );
   const [flatListHeight, setFlatListHeight] = useState(null); // Get FlatList container height on every layout changes
-  const [dropedData, setDropedData] = useState([]);
+  const [dropedData, setDropedData] = useState([]); // List of items available in drop zone
 
+  // Check if item is in drop zone or not
   const isInDropZone = gesture => {
     return gesture.moveY > flatListHeight;
   };
@@ -88,13 +29,12 @@ const App = () => {
     return PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([
-        null,
-        {dx: panAnimatedValue.x, dy: panAnimatedValue.y},
-      ]),
+      onPanResponderMove: Animated.event(
+        [null, {dx: panAnimatedValue.x, dy: panAnimatedValue.y}],
+        {useNativeDriver: false},
+      ),
       onPanResponderRelease: (evt, gestureState) => {
         if (isInDropZone(gestureState)) {
-          console.log(evt.nativeEvent.target);
           let itemObj = data.find(
             item => item.nodeId === evt.nativeEvent.target,
           );
@@ -123,19 +63,10 @@ const App = () => {
     let copyData = [...data];
     let ioi = copyData.find(item => id === item.id);
     let newObject = {...ioi, nodeId};
+
     copyData.splice(copyData.indexOf(ioi), 1, newObject);
-    console.log(copyData);
     setData(copyData);
   };
-
-  //Open url in OS default browser
-  const handleLinking = async url => {
-    await Linking.openURL(url);
-  };
-
-  useEffect(() => {
-    console.log('Droped Bank ===> ', dropedData);
-  }, [dropedData]);
 
   return (
     <View style={styles.container}>
@@ -166,64 +97,27 @@ const App = () => {
           );
         }}
         ListEmptyComponent={
-          <Text
-            style={{
-              position: 'absolute',
-              top: '37.5%',
-              left: '37.5%',
-              fontSize: 18,
-              fontWeight: 'bold',
-              textAlign: 'justify',
-              justifyContent: 'center',
-              opacity: 0.7,
-            }}>
-            No item's left!
-          </Text>
+          <EmptyPlaceholder message="No item's left!" fontColor="gray" />
         }
-        contentContainerStyle={{
-          paddingStart: 5,
-          paddingTop: 20,
-          backgroundColor: 'white',
-          // width: ,
-          flex: 1,
-          alignItems: 'flex-start',
-        }}
+        contentContainerStyle={[styles.zone, {backgroundColor: '#fff'}]}
         onLayout={evt => setFlatListHeight(evt.nativeEvent.layout.height)}
       />
+
+      {/* Drop Zone */}
       <FlatList
         data={dropedData}
-        numColumns={6}
+        numColumns={5}
         columnWrapperStyle={{margin: 10}}
-        contentContainerStyle={styles.dropZone}
+        contentContainerStyle={styles.zone}
         keyExtractor={item => item.id}
         renderItem={({item}) => {
-          return (
-            <TouchableOpacity
-              style={{marginEnd: 10}}
-              onPress={() => handleLinking(item.website)}>
-              <Icon
-                name={
-                  item.title === 'facebook' ? 'facebook-square' : item.title
-                }
-                size={50}
-                color={item.color}
-              />
-            </TouchableOpacity>
-          );
+          return <TouchableIcon data={item} />;
         }}
         ListEmptyComponent={
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: 20,
-              textAlign: 'center',
-              alignSelf: 'center',
-              top: '50%',
-              color: '#fff',
-              position: 'absolute',
-            }}>
-            Drag above items and drop them here!
-          </Text>
+          <EmptyPlaceholder
+            message="Drag above items and drop them here!"
+            fontColor="#fff"
+          />
         }
       />
     </View>
@@ -244,11 +138,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 20,
   },
-  dropZone: {
+  zone: {
     flex: 1,
     backgroundColor: '#1f2e2e',
-    paddingStart: '5%',
-    paddingTop: '5%',
+    paddingStart: '3%',
+    paddingTop: '3%',
     alignItems: 'flex-start',
   },
   social: {
@@ -263,7 +157,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     textTransform: 'capitalize',
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 6,
   },
 });

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "title": "twitter",
+    "website": "https://www.twitter.com",
+    "color": "deepskyblue"
+  },
+  {
+    "id": "2",
+    "title": "facebook",
+    "website": "https://www.facebook.com",
+    "color": "cornflowerblue"
+  },
+  {
+    "id": "3",
+    "title": "amazon",
+    "website": "https://www.amazon.com",
+    "color": "#fff"
+  },
+  {
+    "id": "4",
+    "title": "instagram",
+    "website": "https://www.instagram.com",
+    "color": "deeppink"
+  },
+  {
+    "id": "5",
+    "title": "google",
+    "website": "https://www.google.com",
+    "color": "#DB4437"
+  },
+  {
+    "id": "6",
+    "title": "windows",
+    "website": "https://www.microsoft.com",
+    "color": "cyan"
+  },
+  {
+    "id": "7",
+    "title": "android",
+    "website": "https://developer.android.com",
+    "color": "green"
+  },
+  {
+    "id": "8",
+    "title": "gitlab",
+    "website": "https://www.gitlab.com",
+    "color": "darkorange"
+  },
+  {
+    "id": "9",
+    "title": "youtube",
+    "website": "https://www.youtube.com",
+    "color": "red"
+  }
+]
