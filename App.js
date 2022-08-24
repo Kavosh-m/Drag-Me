@@ -71,55 +71,62 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>DRAG ME APP</Text>
-      <FlatList
-        data={data}
-        keyExtractor={item => item.id}
-        numColumns={4}
-        columnWrapperStyle={{margin: 5}}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => {
-          return (
-            <Animated.View
-              onLayout={evt =>
-                updateItemInData(item.id, evt.target._children[0]._nativeTag)
-              }
-              style={[
-                {
-                  transform: item.pan.getTranslateTransform(),
-                },
-                styles.social,
-              ]}
-              {...panResponder(item.pan).panHandlers}>
-              <Text numberOfLines={1} style={styles.socialText}>
-                {item.title}
-              </Text>
-            </Animated.View>
-          );
-        }}
-        ListEmptyComponent={
-          <EmptyPlaceholder message="No item's left!" fontColor="gray" />
-        }
-        contentContainerStyle={[styles.zone, {backgroundColor: '#fff'}]}
-        onLayout={evt => setFlatListHeight(evt.nativeEvent.layout.height)}
-      />
+      <View style={[styles.zone, {backgroundColor: '#fff'}]}>
+        <FlatList
+          data={data}
+          keyExtractor={item => item.id}
+          numColumns={4}
+          columnWrapperStyle={{margin: 5}}
+          showsVerticalScrollIndicator={false}
+          renderItem={({item}) => {
+            return (
+              <Animated.View
+                onLayout={evt =>
+                  updateItemInData(item.id, evt.target._children[0]._nativeTag)
+                }
+                style={[
+                  {
+                    transform: item.pan.getTranslateTransform(),
+                  },
+                  styles.social,
+                ]}
+                {...panResponder(item.pan).panHandlers}>
+                <Text numberOfLines={1} style={styles.socialText}>
+                  {item.title}
+                </Text>
+              </Animated.View>
+            );
+          }}
+          ListEmptyComponent={
+            <EmptyPlaceholder message="No item's left!" fontColor="gray" />
+          }
+          contentContainerStyle={styles.flatlistContainer}
+          onLayout={evt => setFlatListHeight(evt.nativeEvent.layout.height)}
+        />
+      </View>
 
       {/* Drop Zone */}
-      <FlatList
-        data={dropedData}
-        numColumns={5}
-        columnWrapperStyle={{margin: 10}}
-        contentContainerStyle={styles.zone}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => {
-          return <TouchableIcon data={item} />;
-        }}
-        ListEmptyComponent={
-          <EmptyPlaceholder
-            message="Drag above items and drop them here!"
-            fontColor="#fff"
-          />
-        }
-      />
+      <View style={styles.zone}>
+        <FlatList
+          data={dropedData}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={[
+            styles.flatlistContainer,
+            {alignItems: 'flex-start'},
+          ]}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => {
+            return <TouchableIcon data={item} />;
+          }}
+          ListEmptyComponent={
+            <EmptyPlaceholder
+              message="Drag above items and drop them here!"
+              fontColor="#fff"
+            />
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -138,6 +145,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 20,
   },
+  flatlistContainer: {minHeight: '100%', minWidth: '100%'},
   zone: {
     flex: 1,
     backgroundColor: '#1f2e2e',
